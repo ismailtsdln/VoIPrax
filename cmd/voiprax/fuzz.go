@@ -3,8 +3,10 @@ package main
 import (
 	"time"
 
+	"github.com/briandowns/spinner"
 	"github.com/ismailtsdln/VoIPrax/internal/fuzz"
 	"github.com/ismailtsdln/VoIPrax/internal/sip"
+	"github.com/ismailtsdln/VoIPrax/internal/ui"
 	"github.com/spf13/cobra"
 )
 
@@ -27,7 +29,11 @@ var fuzzCmd = &cobra.Command{
 
 		fuzzer := fuzz.NewFuzzer()
 
-		log.Info().Str("target", targetURI).Msg("Starting fuzzing session")
+		ui.Info("Starting fuzzing session against %s", targetURI)
+
+		s := spinner.New(spinner.CharSets[14], 100*time.Millisecond)
+		s.Suffix = " Sending fuzzed packets..."
+		s.Start()
 
 		for i := 0; i < count; i++ {
 			msg := fuzz.GenerateInviteTemplate(targetURI, fromURI, toURI)
@@ -36,17 +42,16 @@ var fuzzCmd = &cobra.Command{
 			fuzzer.FuzzHeader(msg, "Via")
 			fuzzer.FuzzHeader(msg, "Contact")
 
-			log.Debug().Int("iteration", i+1).Msg("Sending fuzzed message")
-
 			if err := stack.SendUDP(targetURI, msg); err != nil {
-				log.Error().Err(err).Msg("Failed to send fuzzed message")
+				ui.Error("Failed to send packet %d: %v", i+1, err)
 			}
 
 			// Small delay between packets
-			time.Sleep(100 * time.Millisecond)
+			time.Sleep(10 * time.Millisecond)
 		}
 
-		log.Info().Msg("Fuzzing session complete")
+		s.Stop()
+		ui.Success("Fuzzing session complete. Sent %d packets.", count)
 		return nil
 	},
 }

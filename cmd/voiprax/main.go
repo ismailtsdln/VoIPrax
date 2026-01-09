@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/ismailtsdln/VoIPrax/internal/logger"
+	"github.com/ismailtsdln/VoIPrax/internal/ui"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -15,6 +16,9 @@ var (
 		Short: "VoIPrax - Modern VoIP Penetration & Analysis Toolkit",
 		Long: `VoIPrax is a high-performance, modular toolkit for VoIP security analysis,
 fuzzing, and penetration testing.`,
+		PersistentPreRun: func(cmd *cobra.Command, args []string) {
+			ui.PrintBanner()
+		},
 	}
 	cfgFile string
 	verbose bool

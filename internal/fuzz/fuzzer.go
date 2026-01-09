@@ -59,7 +59,7 @@ func GenerateInviteTemplate(targetURI, fromURI, toURI string) *sip.Message {
 			"To":             {fmt.Sprintf("<%s>", toURI)},
 			"Call-ID":        {fmt.Sprintf("%d@127.0.0.1", rand.Int())},
 			"CSeq":           {fmt.Sprintf("%d INVITE", rand.Intn(1000))},
-			"Contact":        {fmt.Sprintf("<sip:voiprax@127.0.0.1:5060>")},
+			"Contact":        {"<sip:voiprax@127.0.0.1:5060>"},
 			"Max-Forwards":   {"70"},
 			"Content-Type":   {"application/sdp"},
 			"Content-Length": {"0"},
